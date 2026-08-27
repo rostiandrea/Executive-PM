@@ -55,7 +55,7 @@ Interpretazione dei campi principali:
   padre a livello Iniziativa e Progetto/CR (vedi `jira-data-model.md`).
 - **Key**: la key dell'oggetto corrente (in questo caso una Wave, WAV-280).
 - **Product Priority**: valore numerico usato per l'ordinamento nella
-  lista di monitoraggio (crescente = priorità più alta prima).
+  lista di monitoraggio (crescente = priorità più alta prima). è un numero che va da 1 a 99
 - **Main product**: il valore da controllare per il filtro di perimetro
   (`LTL / B2C` o `Contract Logistics`).
 
@@ -63,8 +63,8 @@ Interpretazione dei campi principali:
 
 Quando viene chiesto il monitoraggio periodico, produci una tabella con
 le colonne del template sopra, contenente solo oggetti **CR** o **WAV**
-con Main Product/Involved Product in `LTL / B2C` o `Contract Logistics`,
-ordinata **crescente per Product Priority**.
+con Main Product in `LTL / B2C` o `Contract Logistics`,
+ordinata **crescente per Product Priority**. Non estrarre le voci con stato "Annullato"
 
 Esempio di riga in output (formato tabella):
 
