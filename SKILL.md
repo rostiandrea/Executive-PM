@@ -53,9 +53,12 @@ response, pick the one(s) relevant to the current request.
   custom field ID → name mapping, the base JQL, how to resolve the
   Iniziativa/Progetto parent chain, a pagination pattern that keeps large
   results out of context, known connector limitations (Structure app
-  fields, checklist item text), and how to read/write Jira comments. Read
-  this before running a CR/Wave extraction so you reuse the known-working
-  query and field IDs instead of rediscovering them.
+  fields, checklist item text), and how to read/write Jira comments —
+  including the `**Stato aggiornato**` comment convention that now
+  supplies the `Ultimo stato` / `Next Steps` extraction columns (these
+  replaced the unreachable `Last update` / `What's next` Structure
+  fields). Read this before running a CR/Wave extraction so you reuse the
+  known-working query and field IDs instead of rediscovering them.
 
 ## Core workflow
 

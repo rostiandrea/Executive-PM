@@ -87,13 +87,18 @@ query invece di rifare la scoperta:
 
 ### Campi NON disponibili tramite il connettore Atlassian
 
-- **`Last update` e `What's next`**: sono campi custom dell'app **Structure**
-  (ALM Works), non campi Jira nativi/esposti dalla REST API standard. Il
-  connettore Atlassian di questa sessione **non li vede**. Riportali sempre
-  come `Not available` in estrazione — non è un dato mancante nel senso
-  Jira, è un limite del connettore. Se in futuro viene collegato un
-  connettore/integrazione Structure dedicato, questi due campi potranno
-  essere popolati.
+- **`Last update` e `What's next` (i campi Jira nativi dell'app Structure)**:
+  sono campi custom dell'app **Structure** (ALM Works), non campi Jira
+  nativi/esposti dalla REST API standard. Il connettore Atlassian di questa
+  sessione **non li vede** e non c'è modo di leggerli.
+  **Dal 2026-08-27 queste due colonne del template non vengono più
+  lasciate `Not available` per definizione**: sono state sostituite da
+  `Ultimo stato` e `Next Steps`, popolate leggendo l'ultimo commento Jira
+  con marker `**Stato aggiornato**` sulla issue (vedi § Commenti Jira /
+  Convenzione "Stato aggiornato" più sotto) — un surrogato mantenuto da
+  Claude su richiesta dell'utente, non un campo Structure. Se una CR/Wave
+  non ha (ancora) un commento con quel marker, riporta `Not available` per
+  entrambe.
 - **Testo dei singoli item della checklist**: verificato su `CR-190`
   (checklist "3/4", 75%) che `customfield_10137` e `customfield_10138`
   tornano `null` anche quando la checklist esiste e ha progresso. Il
@@ -149,11 +154,69 @@ Algoritmo:
 
 - Leggere: `getJiraIssue` con `fields: ["comment"]` (torna
   `fields.comment.comments[]`, con `author`, `body` in ADF/markdown,
-  `created`, `updated`).
+  `created`, `updated`). Per molte issue insieme, usa
+  `searchJiraIssuesUsingJql` con `key in (...)` e `fields: ["comment"]`
+  invece di una `getJiraIssue` per issue.
 - Scrivere/aggiornare: `addCommentToJiraIssue` (aggiunge un commento
   nuovo; passando `commentId` aggiorna un commento esistente invece di
   crearne uno nuovo).
-- Per un flusso "ultimo commento = stato attuale sintetico", conviene
-  aggiornare **sempre lo stesso commento** (salvando il suo `commentId`,
-  o convenzionalmente riconoscendolo da un marker testuale tipo
-  `**Stato aggiornato**`) invece di accumulare commenti nuovi ogni volta.
+
+### Convenzione "Stato aggiornato" (fonte di `Ultimo stato` / `Next Steps`)
+
+Dal 2026-08-27 questo è il meccanismo standard, sostituisce i campi
+Structure irraggiungibili `Last update`/`What's next` nel template di
+estrazione (vedi `templates-examples.md`).
+
+**Formato del commento** (markdown), scritto/aggiornato da Claude a
+partire da input dell'utente (es. un file Excel con colonne `Key`,
+`Stato`, `Next Steps`, o minute di riunione):
+
+```
+**Stato aggiornato** (DD/MM/YYYY)
+
+**Stato:** <sintesi stato attuale>
+
+**Next steps:**
+- <attività 1> (Owner <nome> - Due date <data o tbd>)
+- <attività 2> (Owner <nome> - Due date <data o tbd>)
+```
+
+La sezione `**Next steps:**` è opzionale (ometterla se non ci sono next
+step da riportare); la sezione `**Stato:**` è opzionale allo stesso modo
+se si vuole riportare solo i next step.
+
+**Scrittura — sempre 1 commento marcato per issue, mai duplicarlo:**
+1. Leggi i commenti esistenti della issue (`fields: ["comment"]`).
+2. Cerca un commento il cui `body` inizi con `**Stato aggiornato**`.
+3. Se esiste, aggiorna **quello stesso commento** passando il suo `id`
+   come `commentId` ad `addCommentToJiraIssue` (non crearne uno nuovo).
+4. Se non esiste, crea un nuovo commento con `addCommentToJiraIssue`
+   (senza `commentId`).
+5. Aggiorna sempre la data `(DD/MM/YYYY)` nell'intestazione con la data
+   dell'aggiornamento corrente.
+
+**Lettura — per popolare `Ultimo stato` / `Next Steps` in estrazione:**
+1. Fra i commenti della issue, prendi l'ultimo (per `created`/`updated`)
+   il cui `body` inizia con `**Stato aggiornato**`. Se non ce n'è nessuno
+   → entrambe le colonne `Not available`.
+2. `Ultimo stato` = testo dopo `**Stato:**` fino alla riga vuota
+   successiva (o fino a `**Next steps:**` se non c'è riga vuota).
+3. `Next Steps` = le righe bullet (`- ...`) sotto `**Next steps:**`,
+   riportate come da originale (contengono già `Owner` e `Due date`
+   nel testo libero — non serve parsarle in campi separati, ma sono già
+   nel formato "Attività (Owner ... - Due date ...)" utile per capire a
+   colpo d'occhio se un next step ha una scadenza definita o è `tbd`).
+4. Se manca solo `**Stato:**` o solo `**Next steps:**` nel commento
+   trovato, la colonna mancante è `Not available`.
+
+**Esempio reale** (CR-438, commento id 35612, creato 2026-08-27):
+```
+**Stato aggiornato** (27/08/2026)
+
+**Stato:** In validazione LT
+
+**Next steps:**
+- Validazione documento approval (owner LT entro 10/9)
+```
+→ `Ultimo stato` = "In validazione LT",
+  `Next Steps` = "Validazione documento approval (owner LT entro 10/9)".

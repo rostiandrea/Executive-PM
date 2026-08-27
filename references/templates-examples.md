@@ -11,8 +11,8 @@ l'export reale da Jira/Excel):
 
 ```
 Iniziativa | Progetto | Key | Summary | Product Priority | Status |
-Project Phase | Requested live date | Release Date | Last update |
-What's next | Demand ref. | SME Factory | Operation ref. |
+Project Phase | Requested live date | Release Date | Ultimo stato |
+Next Steps | Demand ref. | SME Factory | Operation ref. |
 Project manager | Requestor | Etichette | OLD key |
 BR Actual Start Date | BR Actual Due Date | BR Planned Start Date |
 BR Planned Due Date | HLD Actual Start Date | HLD Actual Due Date |
@@ -22,6 +22,17 @@ HLD Planned Start Date | HLD Planned Due Date | Status | Main product
 Nota: il campo `Status` compare due volte nel template originale
 (una dopo `Product Priority`, una prima di `Main product`) — mantienilo
 così quando riproduci il template, non è un errore da correggere.
+
+Nota sulle colonne `Ultimo stato` / `Next Steps`: nel template Excel
+originale erano `Last update` / `What's next`, due campi dell'app
+Structure non raggiungibili dal connettore Atlassian (vedi
+`jira-extraction-recipe.md`). Da agosto 2026 queste due colonne **non
+vengono più lasciate `Not available`**: sono popolate leggendo l'ultimo
+commento Jira con marker `**Stato aggiornato**` sulla CR/Wave (lo stesso
+commento che l'agente scrive/aggiorna a partire dalle minute fornite
+dall'utente — vedi `jira-extraction-recipe.md` § Commenti). Se una
+CR/Wave non ha ancora un commento con quel marker, riporta comunque
+`Not available` per entrambe le colonne.
 
 ### Esempio reale (riga dati)
 
@@ -35,8 +46,8 @@ Status: In corso
 Project Phase: LLD
 Requested live date: (vuoto)
 Release Date: 30/11/2026
-Last update: (vuoto)
-What's next: (vuoto)
+Ultimo stato: Not available (nessun commento con marker "Stato aggiornato" su questa issue)
+Next Steps: Not available
 Demand ref.: Andrea Rosti
 SME Factory: Stefano Gioffrè
 Operation ref.: Lucchesi Valerio
@@ -68,9 +79,15 @@ ordinata **crescente per Product Priority**. Non estrarre le voci con stato "Ann
 
 Esempio di riga in output (formato tabella):
 
-| Product Priority | Key | Summary | Status | Project Phase | Release Date | Project manager | Main product |
-|---|---|---|---|---|---|---|---|
-| 0 | WAV-280 | New Order In e Followup - Cognitive AI for DDT - WebApp & EDI | In corso | LLD | 30/11/2026 | Alessandro Auteri | LTL / B2C |
+| Product Priority | Key | Summary | Status | Project Phase | Release Date | Ultimo stato | Next Steps | Project manager | Main product |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | WAV-280 | New Order In e Followup - Cognitive AI for DDT - WebApp & EDI | In corso | LLD | 30/11/2026 | Not available | Not available | Alessandro Auteri | LTL / B2C |
+
+Esempio con commento "Stato aggiornato" presente (CR-438):
+
+| Product Priority | Key | Summary | Status | Ultimo stato | Next Steps | Main product |
+|---|---|---|---|---|---|---|
+| — | CR-438 | (summary) | — | In validazione LT | Validazione documento approval (Owner LT - Due date 10/9) | LTL / B2C |
 
 Se il set di colonne è molto ampio, puoi mostrare in tabella solo le
 colonne più operative (come sopra) e riportare le rimanenti solo se
