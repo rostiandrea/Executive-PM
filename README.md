@@ -22,3 +22,11 @@ follow-up, con il tono e la disciplina di un Project Manager senior.
   cloudId, project key, mapping dei custom field, JQL di base, risoluzione
   della catena Iniziativa/Progetto, limiti noti del connettore (campi
   Structure, testo checklist) e lettura/scrittura dei commenti Jira.
+- [`references/steering-committee-pptx.md`](./references/steering-committee-pptx.md)
+  — come generare/aggiornare il PowerPoint dello Steering Committee a
+  partire dai dati Jira, mantenendo la grafica del template
+  (`assets/steering-committee/`) e in particolare della sezione
+  Iniziative.
+- [`scripts/build_steerco_pptx.py`](./scripts/build_steerco_pptx.py) —
+  helper Python (python-pptx) che compila il template dello Steering
+  Committee con i dati estratti.

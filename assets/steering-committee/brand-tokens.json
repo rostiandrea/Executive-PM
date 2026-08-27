@@ -1,0 +1,37 @@
+{
+  "source": "Arcese Corporate Design Manual, April 2024",
+  "colors": {
+    "primary_red": "C8102E",
+    "off_white": "EBE6E0",
+    "accent_green": "A4D233",
+    "black": "000000",
+    "neutrals": {
+      "neutral_1_light": "CDC9C1",
+      "neutral_2": "B7B2A7",
+      "neutral_3": "858075",
+      "neutral_4_dark": "504C43"
+    }
+  },
+  "template_theme_note": "TemplateSteerco.pptx already ships a matching PowerPoint theme named 'Arcese' (ppt/theme/theme1.xml): dk2=504C43, lt2=EBE6E0, accent1=C8102E, accent2=EBE6E0, accent3=A4D233, accent4=CDC9C1, accent5=858075, accent6=504C43. Always build new decks from this template rather than recreating the palette from scratch.",
+  "rag_status_fill_colors": {
+    "green": "00B050",
+    "yellow": "FDEA7B",
+    "red": "C00000",
+    "note": "Green and yellow are the two values observed in the template's Iniziative tables (RAG column, cell fill only, no text). Red was not present in the sample data but C00000 is the standard PowerPoint 'red' used consistently with the amber FDEA7B/green 00B050 pair already in the deck; use it for any item that is off-track/blocked/overdue."
+  },
+  "typefaces": {
+    "institutional": {
+      "family": "Roboto",
+      "styles": ["Light", "Regular", "Medium", "Bold", "Light Italic", "Italic", "Medium Italic", "Bold Italic", "Condensed", "Bold Condensed"],
+      "used_in_template": "Slide titles and section headers use Roboto Condensed Bold-style all-caps; body/table text uses Roboto Regular/Medium at 9-11pt. The template's theme fontScheme already sets Roboto as both major and minor font, so shapes inheriting +mj-lt/+mn-lt need no manual font changes."
+    },
+    "alternative": {
+      "family": "Arial",
+      "usage": "Only for e-mail signatures and other digital contexts where Roboto is unavailable. Not relevant for the PowerPoint deck itself, since the deck's own theme carries Roboto."
+    }
+  },
+  "logo": {
+    "file_in_template": "embedded as Picture2.jpg (from an .emf) on every content slide footer, bottom-right",
+    "primary_mark": "white 'a' + forward arrow icon on red background (cover slide), red icon on white background (content slides' footer logo)"
+  }
+}

@@ -10,9 +10,12 @@ description: >
   view, a check on overdue/at-risk/blocked items, a meeting-to-Jira
   consistency check, an escalation recommendation, or any project/portfolio
   management analysis — even when the user does not explicitly say "PM",
-  "PMO" or "Jira". Trigger on requests like "cosa devo seguire oggi",
-  "dammi lo stato dei progetti", "estrai le CR aperte", "controlla le
-  scadenze", "prepara il daily brief", "chi sta seguendo questa iniziativa".
+  "PMO" or "Jira". Also covers producing or updating the brand-compliant
+  Steering Committee PowerPoint deck from current Jira data. Trigger on
+  requests like "cosa devo seguire oggi", "dammi lo stato dei progetti",
+  "estrai le CR aperte", "controlla le scadenze", "prepara il daily brief",
+  "chi sta seguendo questa iniziativa", "prepara il PowerPoint dello
+  steering committee", "aggiorna la presentazione dello steerco".
 ---
 
 # Executive PM
@@ -69,6 +72,17 @@ response, pick the one(s) relevant to the current request.
   schedule (weekdays 8:45 and 13:45 Europe/Rome) — read this before ever
   touching the dashboard artifact manually, and always follow it (read the
   live edits-data before overwriting) even for an ad hoc refresh.
+
+- **`references/steering-committee-pptx.md`** — How to produce or refresh
+  the Steering Committee PowerPoint deck
+  (`assets/steering-committee/TemplateSteerco.pptx`) from current Jira
+  data: the 12-slide template structure, the brand tokens extracted from
+  the Arcese Corporate Design Manual
+  (`assets/steering-committee/brand-tokens.json`), the per-slide data
+  mapping, and the golden rule that the Iniziative section (slides 9-12)
+  must change as little as possible graphically. Pairs with
+  `scripts/build_steerco_pptx.py`, which fills the template via
+  python-pptx. Read this before ever touching that deck.
 
 ## Core workflow
 
