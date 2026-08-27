@@ -47,6 +47,29 @@ response, pick the one(s) relevant to the current request.
   support write-ups, and Jira-vs-meeting mismatch call-outs. Read this
   before producing any structured output so the format matches exactly.
 
+- **`references/jira-extraction-recipe.md`** — The actual, previously
+  verified technical recipe for pulling this data out of Jira via the
+  Atlassian connector: cloudId, the CR/PRJ/WAV/INI project keys, the
+  custom field ID → name mapping, the base JQL, how to resolve the
+  Iniziativa/Progetto parent chain, a pagination pattern that keeps large
+  results out of context, known connector limitations (Structure app
+  fields, checklist item text), and how to read/write Jira comments —
+  including the `**Stato aggiornato**` comment convention that now
+  supplies the `Ultimo stato` / `Next Steps` extraction columns (these
+  replaced the unreachable `Last update` / `What's next` Structure
+  fields). Read this before running a CR/Wave extraction so you reuse the
+  known-working query and field IDs instead of rediscovering them.
+
+- **`references/dashboard-refresh-procedure.md`** — Step-by-step procedure
+  to regenerate the "Product Team Management" dashboard Artifact
+  (`dashboard/` folder: `dashboard_template.html`, `build_dashboard_data.py`,
+  `publish_dashboard.py`, `grandparents.jsonl`) from fresh Jira data
+  **without losing edits made inside the live page** (status overrides,
+  next steps added/completed/deleted). This runs automatically on a
+  schedule (weekdays 8:45 and 13:45 Europe/Rome) — read this before ever
+  touching the dashboard artifact manually, and always follow it (read the
+  live edits-data before overwriting) even for an ad hoc refresh.
+
 ## Core workflow
 
 1. **Behave like a PM, not a report generator.** Load `agent-behavior.md`
