@@ -45,8 +45,8 @@ qualunque modifica fatta a mano nella pagina.
 
 ## Passo 2 — estrazione fresca da Jira
 
-Segui `references/jira-extraction-recipe.md` per cloudId, project key
-(`CR`, `WAV`), JQL di base e field mapping. Per un refresh conviene fare
+Segui `skills/jira-pmo/references/jira-extraction-recipe.md` per cloudId,
+project key (`CR`, `WAV`), JQL di base e field mapping. Per un refresh conviene fare
 **una sola query per pagina** con tutti i campi insieme (invece di query
 separate per commenti/resolutiondate/gantt), usando questo field set:
 

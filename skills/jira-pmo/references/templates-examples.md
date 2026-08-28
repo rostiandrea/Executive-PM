@@ -1,8 +1,12 @@
-# Template ed esempi di analisi
+# Template ed esempi di analisi — dati Jira
 
-Questo documento raccoglie i template concreti da usare in output e alcuni
-esempi realistici applicati. Usa sempre queste strutture quando produci
-l'analisi corrispondente, così l'output resta consistente nel tempo.
+Questo documento raccoglie i template concreti da usare quando si
+estraggono o monitorano dati Jira. Usa sempre queste strutture, così
+l'output resta consistente nel tempo.
+
+I template generici non specifici a Jira (Daily PM Brief, escalation,
+comunicazione stakeholder, decision support) sono in `CLAUDE.md` alla
+radice del repo.
 
 ## 1. Template di estrazione dati Jira
 
@@ -94,89 +98,7 @@ colonne più operative (come sopra) e riportare le rimanenti solo se
 richieste esplicitamente o rilevanti per un punto di attenzione (es. una
 data BR/HLD in ritardo).
 
-## 3. Daily PM Brief
-
-Struttura fissa da usare per il briefing giornaliero:
-
-```
-Daily PM Brief
-
-🔴 Critical / Overdue
-[Elementi che richiedono attenzione immediata]
-
-🟠 At Risk
-[Elementi dove consegna o scadenza sono potenzialmente a rischio]
-
-🟡 Due Soon
-[Attività con scadenze imminenti]
-
-🔵 Today
-[Azioni o impegni che richiedono attenzione oggi]
-
-⚪ Open Points
-[Questioni o decisioni importanti non ancora risolte]
-
-🎯 Recommended Focus
-[Massimo 3–5 azioni su cui l'utente dovrebbe concentrarsi per prime]
-```
-
-Esempio (estratto):
-
-```
-🔴 Critical / Overdue
-- CR-1198 — Scaduta il 20/08, nessun aggiornamento di stato. Owner: M. Bianchi.
-
-🟠 At Risk
-- WAV-280 — Due 30/11. Fase LLD non ancora completata, nessuna stima
-  aggiornata di consegna.
-
-🎯 Recommended Focus
-1. Sollecitare aggiornamento su CR-1198 (owner M. Bianchi).
-2. Verificare stato fase LLD su WAV-280.
-```
-
-## 4. Nota di escalation
-
-Formato: **Issue → Impact → Required action**
-
-```
-Escalation recommended: [problema]. This puts [scadenza/rilascio] at
-risk. [Azione richiesta] is required by [data].
-```
-
-Esempio:
-
-```
-Escalation recommended: Development is blocked by the missing business
-requirement. This puts the 15/09 release at risk. Business confirmation
-is required by 30/08.
-```
-
-## 5. Comunicazione verso stakeholder
-
-Formato: **facts → impact → required action → deadline**
-
-Esempio:
-
-```
-The activity is currently overdue and is impacting the planned delivery.
-Please provide an updated completion date by tomorrow.
-```
-
-## 6. Decision support
-
-Quando viene chiesta un'opinione o una raccomandazione, struttura la
-risposta così:
-
-```
-Situation: [contesto sintetico]
-Key considerations: [fattori rilevanti]
-Recommendation: [raccomandazione esplicita]
-Risks / implications: [rischi o conseguenze]
-Next action: [prossimo passo concreto]
-```
-
-## 7. Jira mismatch (riunione vs Jira)
+## 3. Jira mismatch (riunione vs Jira)
 
 Esempio:
 
@@ -185,10 +107,10 @@ Jira mismatch: During today's meeting, delivery was agreed for 05/09,
 while Jira currently shows 29/08.
 ```
 
-## 8. Segnali di dato mancante
+## 4. Segnali di dato mancante
 
 Non inventare mai un valore mancante. Usa sempre una di queste due
-etichette:
+etichette (vedi anche `CLAUDE.md` § Data Integrity):
 
 - `Not available` — il dato non è disponibile nella fonte consultata.
 - `TBD` — il dato è atteso ma non è ancora stato definito/comunicato.
