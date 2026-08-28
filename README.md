@@ -1,24 +1,36 @@
 # Executive-PM
 
-Skill Claude per un assistente Executive Project Manager / PMO: trasforma
-dati di progetto (estrazioni Jira, note di riunione, aggiornamenti di
-stato) in priorità, decisioni, azioni, owner, scadenze, rischi e
-follow-up, con il tono e la disciplina di un Project Manager senior.
+Repository di supporto Claude per un assistente Executive Project
+Manager / PMO: trasforma dati di progetto (estrazioni Jira, note di
+riunione, aggiornamenti di stato) in priorità, decisioni, azioni, owner,
+scadenze, rischi e follow-up, con il tono e la disciplina di un Project
+Manager senior.
 
-## Contenuto
+## Mappa del repo
 
-- [`SKILL.md`](./SKILL.md) — punto di ingresso della skill: quando si
-  attiva e come usare i file di riferimento.
-- [`references/agent-behavior.md`](./references/agent-behavior.md) —
-  identità, personalità e principi operativi dell'agente.
-- [`references/jira-data-model.md`](./references/jira-data-model.md) —
-  come interpretare la gerarchia degli oggetti Jira (Iniziativa, Progetto,
-  CR, Wave) e il filtro di perimetro (`LTL / B2C`, `Contract Logistics`).
-- [`references/templates-examples.md`](./references/templates-examples.md)
-  — template di estrazione dati ed esempi concreti delle analisi
-  ricorrenti (monitoraggio CR/Wave, Daily PM Brief, escalation, ecc.).
-- [`references/jira-extraction-recipe.md`](./references/jira-extraction-recipe.md)
-  — ricetta tecnica verificata per l'estrazione via connettore Atlassian:
-  cloudId, project key, mapping dei custom field, JQL di base, risoluzione
-  della catena Iniziativa/Progetto, limiti noti del connettore (campi
-  Structure, testo checklist) e lettura/scrittura dei commenti Jira.
+- [`CLAUDE.md`](./CLAUDE.md) — **istruzioni permanenti**, sempre attive:
+  identità, personalità e principi operativi dell'agente (non è una
+  skill a trigger: si applica ad ogni interazione).
+- `skills/` — le skill a trigger, caricate solo quando la richiesta è
+  pertinente:
+  - [`skills/jira-pmo/`](./skills/jira-pmo/SKILL.md) — interpretazione
+    della gerarchia Jira (Iniziativa/Progetto/CR/Wave), filtro di
+    perimetro (`LTL / B2C`, `Contract Logistics`), ricetta tecnica di
+    estrazione via connettore Atlassian, template di estrazione e
+    monitoraggio.
+  - [`skills/steering-committee/`](./skills/steering-committee/SKILL.md)
+    — preparazione del deck PowerPoint periodico di Steering Committee
+    (Summary, Focus Tavoli, Iniziative in corso), a partire dai dati
+    Jira ottenuti tramite `jira-pmo`.
+- [`dashboard/`](./dashboard/README.md) — webapp/artifact "Product Team
+  Management": dashboard operativa che si rigenera automaticamente da
+  Jira (Routine schedulate, vedi `dashboard/README.md` per la procedura
+  di refresh).
+
+## Come si integrano
+
+`CLAUDE.md` definisce sempre *come* comportarsi. Le skill in `skills/`
+si attivano in base al task e forniscono *cosa sapere* per eseguirlo
+(dati Jira, formati di output). `dashboard/` è un'applicazione a sé che
+consuma gli stessi dati Jira (via `jira-pmo`) ma vive fuori dal
+perimetro delle skill, con la propria documentazione operativa.

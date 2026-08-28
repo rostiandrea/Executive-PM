@@ -4,7 +4,7 @@ Build dashboard_data_slim.json from the raw Jira extraction files.
 
 Expects, in --data-dir (default: current directory):
   full_all.jsonl     one JSON object per line, one per CR/Wave, with the fields
-                      listed in ../references/jira-extraction-recipe.md
+                      listed in ../skills/jira-pmo/references/jira-extraction-recipe.md
                       (key, project, type, summary, status, statusCategory,
                       priority, phase, reqlive, release, resolutiondate,
                       plannedStart, plannedDue, demand, sme, ops, pm,
@@ -17,8 +17,8 @@ Expects, in --data-dir (default: current directory):
 
 Writes dashboard_data_slim.json in --data-dir.
 
-See references/jira-extraction-recipe.md in this repo for how to produce
-full_all.jsonl and grandparents.jsonl from Jira, and dashboard-refresh-procedure.md
+See skills/jira-pmo/references/jira-extraction-recipe.md in this repo for how to
+produce full_all.jsonl and grandparents.jsonl from Jira, and dashboard/README.md
 for the end-to-end refresh + publish flow this script is one step of.
 """
 import json, re, datetime, argparse, os
