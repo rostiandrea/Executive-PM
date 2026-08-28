@@ -22,6 +22,15 @@ Manager senior.
     — preparazione del deck PowerPoint periodico di Steering Committee
     (Summary, Focus Tavoli, Iniziative in corso), a partire dai dati
     Jira ottenuti tramite `jira-pmo`.
+  - [`skills/creaasupport/`](./skills/creaasupport/SKILL.md) — apertura
+    autonoma di un ticket sul portale SU&GO Arcese
+    (aplatform.arcese.com/support).
+  - [`skills/contract-logistics-it-quotation/`](./skills/contract-logistics-it-quotation/SKILL.md)
+    — compilazione del file Excel di quotazione costi IT ("IT Costs")
+    per un tender/RFQ di Contract Logistics Arcese.
+  - [`skills/stileex/`](./skills/stileex/SKILL.md) — stile di
+    comunicazione "StileEX" (executive, diretto, pragmatico) per email e
+    testi professionali.
 - [`dashboard/`](./dashboard/README.md) — webapp/artifact "Product Team
   Management": dashboard operativa che si rigenera automaticamente da
   Jira (Routine schedulate, vedi `dashboard/README.md` per la procedura
