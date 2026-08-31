@@ -70,6 +70,23 @@ def parse_stato_comment(body, default_year):
                 steps.append({"text": line, "owner": None, "dueRaw": None, "dueISO": None, "done": False})
     return stato, steps
 
+CB_LABELS = {
+    "beneficiAnnui": "Benefici Annui",
+    "capex": "Costi Capex",
+    "opexEsterni": "Costi Opex - esterni",
+    "opexInterni": "Costi Opex - interni",
+    "ggInterni": "GG Interni",
+}
+
+def parse_costi_benefici(body):
+    if not body or "Costi e Benefici" not in body:
+        return None
+    cb = {}
+    for field, label in CB_LABELS.items():
+        m = re.search(r'\|\s*' + re.escape(label) + r'\s*\|\s*(.+?)\s*\|', body)
+        cb[field] = m.group(1).strip() if m else None
+    return cb
+
 def fmt_kv(key, summary):
     if not key:
         return None
@@ -116,6 +133,9 @@ def main():
         ultimo_stato, next_steps = (None, [])
         if stato_comment:
             ultimo_stato, next_steps = parse_stato_comment(stato_comment.get("body"), today.year)
+
+        cb_comment = row.get("cbComment")
+        costi_benefici = parse_costi_benefici(cb_comment.get("body")) if cb_comment else None
         for ns in next_steps:
             next_step_counter += 1
             ns["id"] = f"ns-{next_step_counter}"
@@ -153,6 +173,7 @@ def main():
             "mainProduct": row.get("mainprod") if row.get("mainprod") != "NA" else None,
             "ultimoStato": ultimo_stato,
             "nextSteps": next_steps,
+            "costiBenefici": costi_benefici,
         })
 
     def sort_key(r):

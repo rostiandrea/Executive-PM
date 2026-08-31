@@ -17,6 +17,36 @@ passo è esplicito.
   `dashboard/build_dashboard_data.py`, `dashboard/publish_dashboard.py`,
   `dashboard/grandparents.jsonl` (cache della catena Iniziativa/Progetto).
 
+## Attenzione — sessioni Claude Code parallele / branch multipli
+
+Questo artifact può essere modificato sia dall'utente nel browser, sia da
+un'ALTRA sessione Claude Code (una chat diversa, magari su un branch
+diverso) che pubblica una propria versione. Il Passo 1 protegge le
+modifiche fatte dall'utente NELLA PAGINA (stato, next steps — vivono in
+`edits-data`), ma **non protegge funzionalità di codice aggiunte da
+un'altra sessione** se questa sessione ricostruisce l'HTML da un
+`dashboard/dashboard_template.html` locale/di branch più vecchio: il
+publish sovrascrive silenziosamente sia il codice che eventuali dati che
+quella funzionalità portava con sé. È già successo due volte: la sezione
+"💶 Costi e Benefici" è stata aggiunta da una sessione su un branch, persa
+da un refresh su un altro branch che non la conosceva, recuperata, e poi
+persa di nuovo quando il repo è stato riorganizzato su `main` senza
+portare quella modifica. Prima di ricostruire il template per QUALSIASI
+motivo (restyle, nuova funzionalità, refresh dati, o anche solo perché le
+istruzioni del trigger puntano a un branch diverso da quello che hai
+usato l'ultima volta):
+1. Fai `Artifact action="read"` sull'URL live e leggi per intero
+   `<style id="app-style">` e `<script id="app-script">` dell'HTML
+   restituito (non solo `edits-data`).
+2. Fai un diff testuale con `dashboard/dashboard_template.html` sul
+   branch che stai per usare (`git diff`, non a occhio). Se il live ha
+   funzionalità/markup che il template locale non ha, il branch è
+   indietro — porta prima quelle modifiche (e aggiorna questo documento
+   e `jira-extraction-recipe.md` se introducono una nuova convenzione
+   dati), poi procedi. Non fidarti del branch che le istruzioni del
+   trigger dicono di usare: verifica sempre contro il live.
+3. Solo a questo punto applica le tue modifiche e ripubblica.
+
 ## Passo 0 — checkout del repo
 
 Clona/aggiorna `rostiandrea/Executive-PM` e lavora dentro `dashboard/`.
@@ -69,8 +99,17 @@ is" e sul commento `**Stato aggiornato**`:
 key, project, type, summary, status, statusCategory, priority, phase,
 reqlive, release, updated, resolutiondate, plannedStart, plannedDue,
 demand, sme, ops, pm, requestor, labels, oldkey, mainprod, involved,
-parent, statoComment
+parent, statoComment, cbComment
 ```
+
+`cbComment` è l'ultimo commento il cui `body` contiene `💶 Costi e
+Benefici` (stesso array di commenti già letto per `statoComment`, cercalo
+in parallelo — non serve una query separata). Vedi la convenzione
+"💶 Costi e Benefici" in `skills/jira-pmo/references/jira-extraction-recipe.md`.
+**Non ometterlo**: è dati inseriti dall'utente su Jira, non ricostruibile
+se lo perdi nel JSONL — se una riga non ha commenti con questo marker,
+`cbComment` è semplicemente assente/`null` per quella issue, non un
+errore.
 
 Concatena tutte le pagine in `full_all.jsonl` (una riga per issue, 1 issue
 = 1 oggetto JSON).

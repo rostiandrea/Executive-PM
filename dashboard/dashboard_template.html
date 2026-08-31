@@ -415,7 +415,8 @@
       status: e.status !== undefined ? e.status : b.status,
       statusCategory: e.statusCategory !== undefined ? e.statusCategory : b.statusCategory,
       ultimoStato: e.ultimoStato !== undefined ? e.ultimoStato : b.ultimoStato,
-      nextSteps: e.nextSteps !== undefined ? e.nextSteps : (b.nextSteps || [])
+      nextSteps: e.nextSteps !== undefined ? e.nextSteps : (b.nextSteps || []),
+      costiBenefici: b.costiBenefici || null
     });
   }
 
@@ -803,6 +804,7 @@
       + '<div class="field-group"><label>Next steps</label><div id="nsListWrap">'+renderNsList(it)+'</div>'
       +   '<div class="ns-add"><input id="nsText" type="text" placeholder="Attività…"><input id="nsOwner" type="text" placeholder="Owner"><input id="nsDue" type="date"><button class="btn btn-sm" id="nsAddBtn">+ Aggiungi</button></div>'
       + '</div>'
+      + renderCostiBenefici(it)
       + '<div><a href="'+esc(it.url)+'" target="_blank" rel="noopener">Apri in Jira ↗</a></div>'
       + '</div>'
       + '<div class="drawer-foot"><span class="save-state saved" id="saveState">Salvato</span></div>';
@@ -810,6 +812,20 @@
     document.getElementById('drawer').classList.add('open');
     document.getElementById('scrim').classList.add('open');
     bindDrawerEvents(key);
+  }
+  function renderCostiBenefici(it){
+    var cb = it.costiBenefici;
+    if(!cb) return '';
+    return '<div class="field-group"><label>Costi e Benefici</label>'
+      + '<dl class="meta-grid">'
+      +   metaField('Benefici Annui', cb.beneficiAnnui)
+      +   metaField('Costi Capex', cb.capex)
+      +   metaField('Costi Opex — esterni', cb.opexEsterni)
+      +   metaField('Costi Opex — interni', cb.opexInterni)
+      +   metaField('GG Interni', cb.ggInterni)
+      + '</dl>'
+      + '<p style="margin:6px 0 0;font-size:11px;color:var(--ink-faint);">Aggiornato via commento Jira — per modificarlo chiedi a Claude in chat.</p>'
+      + '</div>';
   }
   function metaField(label, val){
     return '<div><dt>'+esc(label)+'</dt><dd>'+(val===null||val===undefined||val===''?'<em style="color:var(--ink-faint);font-style:italic;">Not available</em>':esc(val))+'</dd></div>';

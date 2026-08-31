@@ -220,3 +220,71 @@ se si vuole riportare solo i next step.
 ```
 → `Ultimo stato` = "In validazione LT",
   `Next Steps` = "Validazione documento approval (owner LT entro 10/9)".
+
+### Convenzione "💶 Costi e Benefici" (fonte del campo `costiBenefici`)
+
+Dal 2026-08-27, stesso pattern della convenzione "Stato aggiornato" ma per
+i dati economici di una CR/Wave (benefici annui, capex, opex esterni/interni,
+giorni interni). **Importante**: questi valori vivono SOLO come commento
+Jira — non esiste un campo custom dedicato — quindi se una sessione diversa
+rigenera l'estrazione senza leggere anche questo commento, il dato sparisce
+dalla dashboard al refresh successivo pur restando su Jira. Va sempre letto
+insieme al commento "Stato aggiornato" nello stesso fetch dei commenti.
+
+**Formato del commento** (markdown), scritto/aggiornato da Claude su
+richiesta esplicita dell'utente (es. "per CR-xxx metti benefici annui
+5000€, capex 2000€, opex esterni 0, opex interni 900€, 3 gg interni"):
+
+```
+**💶 Costi e Benefici**
+
+| Voce | Valore |
+| --- | --- |
+| Benefici Annui | <valore o "Not available" o descrizione qualitativa> |
+| Costi Capex | <valore o "Not available"> |
+| Costi Opex - esterni | <valore o "Not available"> |
+| Costi Opex - interni | <valore o "Not available"> |
+| GG Interni | <valore o "Not available"> |
+
+_Aggiornato il DD/MM/YYYY - Executive PM tracker_
+```
+
+I valori NON sono sempre numerici: possono essere importi (`€ 2.800`),
+giorni (`3 gg`), o testo qualitativo (`non stimabili - solo qualitativi`,
+`Must Have Normativo`, `In stima`, `Not available`). Vanno riportati così
+come forniti dall'utente, senza forzare un formato numerico.
+
+**Scrittura — sempre 1 commento marcato per issue, mai duplicarlo:**
+Stessa procedura della convenzione "Stato aggiornato" (cerca un commento
+il cui `body` contenga `💶 Costi e Benefici`; se esiste aggiornalo con
+`commentId`, altrimenti creane uno nuovo; aggiorna sempre la data in
+`_Aggiornato il DD/MM/YYYY..._`).
+
+**Lettura — per popolare `costiBenefici` in estrazione:**
+1. Fra i commenti della issue, prendi l'ultimo il cui `body` contiene
+   `💶 Costi e Benefici`.
+2. Estrai le 5 righe della tabella per etichetta (`Benefici Annui`,
+   `Costi Capex`, `Costi Opex - esterni`, `Costi Opex - interni`,
+   `GG Interni`) col valore della seconda colonna, come stringa.
+3. Se non c'è nessun commento con questo marker, `costiBenefici` è `null`
+   (il drawer della dashboard non mostra la sezione).
+4. Implementato in `dashboard/build_dashboard_data.py`
+   (`parse_costi_benefici`) — legge dal campo `cbComment` di ogni riga di
+   `full_all.jsonl`, popolato allo stesso modo di `statoComment` (vedi
+   Passo 2 di `dashboard/README.md`: nella query dei commenti per ogni
+   issue, va cercato ANCHE questo marker, non solo "Stato aggiornato").
+
+**Esempio reale** (WAV-323, commento id 35681, creato 2026-08-27):
+```
+**💶 Costi e Benefici**
+
+| Voce | Valore |
+| --- | --- |
+| Benefici Annui | € 5.416 / anno |
+| Costi Capex | € 2.800 |
+| Costi Opex - esterni | € 0 |
+| Costi Opex - interni | € 900 |
+| GG Interni | 3 gg |
+
+_Aggiornato il 27/08/2026 - Executive PM tracker_
+```
