@@ -71,3 +71,4 @@
 {"key": "CR-208", "summary": "High Security - campo da tracciare in SGA", "parent": {"key": "PRJ-316", "summary": "Evoluzione Strumenti e Processi LTL 2025"}}
 {"key": "PRJ-522", "summary": "Automazione chiusura spedizioni per ottimizzazione performance SGA", "parent": {"key": "INI-176", "summary": "EVOLUZIONE STRUMENTI E PROCESSI LTL e CL 2026"}}
 {"key": "PRJ-61", "summary": "New Order In e Followup", "parent": {"key": "INI-31", "summary": "NEW ORDER IN E FOLLOWUP"}}
+{"key": "PRJ-593", "summary": "Asset Management per Carrelli Logistica", "parent": {"key": "INI-176", "summary": "EVOLUZIONE STRUMENTI E PROCESSI LTL e CL 2026"}}
