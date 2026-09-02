@@ -245,6 +245,12 @@
   .date-cell.overdue{ color:var(--red); font-weight:600; }
   .stato-cell{ font-size:12px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .stato-cell.empty{ color:var(--ink-faint); font-style:italic; }
+  .ns-detail-cell{ font-size:10.5px; line-height:1.35; color:var(--ink-soft); overflow:hidden; min-width:0; }
+  .ns-detail-cell.empty{ color:var(--ink-faint); font-style:italic; }
+  .ns-detail-line{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ns-detail-line + .ns-detail-line{ margin-top:2px; }
+  .ns-detail-line.done{ text-decoration:line-through; opacity:.55; }
+  .ns-detail-meta{ color:var(--ink-faint); }
   .chev{ color:var(--ink-faint); }
   .empty-state{ padding:40px 20px; text-align:center; color:var(--ink-faint); }
 
@@ -377,6 +383,7 @@
     typeFilter: 'all',
     productFilter: { ltl: true, cl: true },
     showOldDone: false,
+    showNsDetail: false,
     noPriorityOpen: false,
     suspendedOpen: false,
     sort: 'priority',
@@ -384,6 +391,9 @@
     openKey: null
   };
   var OLD_DONE_DAYS = 30;
+  var ROW_COLS_BASE = '20px 30px 82px 1fr 112px 92px 96px 54px 1.2fr 18px';
+  var NS_DETAIL_COL_W = '260px';
+  function useNsDetail(){ return state.showNsDetail && window.innerWidth > 900; }
 
   var PHASE_WARN = ['LLD','DEVELOPMENT','LIVE','TEST'];
 
@@ -644,10 +654,13 @@
       + '<button class="chip-filter standalone" id="oldDoneToggle" aria-pressed="'+state.showOldDone+'">'
       +   (state.showOldDone ? 'Nascondi completati vecchi' : 'Mostra completati > 30gg ('+oldDoneHidden+')')
       + '</button>'
+      + '<button class="chip-filter standalone" id="nsDetailToggle" aria-pressed="'+state.showNsDetail+'">'
+      +   (state.showNsDetail ? 'Nascondi dettaglio Next Steps' : 'Mostra dettaglio Next Steps')
+      + '</button>'
       + '</div>';
     html += '</div>';
 
-    html += '<div class="row-head"><span></span><span>Prio</span><span>Key</span><span>Summary</span><span>Stato</span><span>Fase</span><span>Rilascio</span><span>NS</span><span>Ultimo stato</span><span></span></div>';
+    html += '<div class="row-head"'+(useNsDetail()?' style="grid-template-columns:'+ROW_COLS_BASE+' '+NS_DETAIL_COL_W+';"':'')+'><span></span><span>Prio</span><span>Key</span><span>Summary</span><span>Stato</span><span>Fase</span><span>Rilascio</span><span>NS</span><span>Ultimo stato</span><span></span>'+(useNsDetail()?'<span>Next Steps</span>':'')+'</div>';
 
     if(!withPriority.length && !noPriority.length && !suspended.length){
       html += '<div class="empty-state">Nessun elemento corrisponde ai filtri.</div>';
@@ -700,7 +713,8 @@
     var openCount = openStepsCount(it);
     var hasSoon = soonSteps(it).length > 0 && !overdueSteps(it).length;
     var nsTitle = openCount === 0 ? 'Nessun next step aperto' : (openCount + ' next step aperti' + (hasSoon ? ' — almeno uno in scadenza questa settimana' : ''));
-    return '<div class="row" data-key="'+esc(it.key)+'">'
+    var nsd = useNsDetail();
+    return '<div class="row" data-key="'+esc(it.key)+'"'+(nsd?' style="grid-template-columns:'+ROW_COLS_BASE+' '+NS_DETAIL_COL_W+';"':'')+'>'
       + '<div>'+iconFlag(f, reasons)+'</div>'
       + '<div class="pbadge">'+(it.priority===null?'—':esc(it.priority))+'</div>'
       + '<div><span class="key-link '+(it.type==='WAV'?'type-wav':'type-cr')+' mono">'+esc(it.key)+'</span></div>'
@@ -711,7 +725,19 @@
       + '<div class="ns-counter'+(hasSoon?' has-soon':'')+(openCount===0?' zero':'')+'" title="'+esc(nsTitle)+'">'+(hasSoon?'<span class="dot"></span>':'')+openCount+'</div>'
       + '<div class="stato-cell'+(stato?'':' empty')+'">'+(stato||'Not available')+'</div>'
       + '<div class="chev">›</div>'
+      + (nsd ? renderNsDetailCell(it) : '')
       + '</div>';
+  }
+
+  function renderNsDetailCell(it){
+    var steps = it.nextSteps || [];
+    if(!steps.length) return '<div class="ns-detail-cell empty">—</div>';
+    var lines = steps.map(function(ns){
+      var due = ns.dueISO ? fmtDate(ns.dueISO) : (ns.dueRaw || 'tbd');
+      var full = ns.text + ' (' + (ns.owner||'—') + ' — ' + due + ')';
+      return '<div class="ns-detail-line'+(ns.done?' done':'')+'" title="'+esc(full)+'">'+esc(ns.text)+' <span class="ns-detail-meta">('+esc(ns.owner||'—')+' — '+esc(due)+')</span></div>';
+    });
+    return '<div class="ns-detail-cell">'+lines.join('')+'</div>';
   }
 
   function bindSummaryEvents(){
@@ -733,6 +759,8 @@
     });
     var odt = document.getElementById('oldDoneToggle');
     if(odt) odt.addEventListener('click', function(){ state.showOldDone = !state.showOldDone; renderSummary(); });
+    var nsdt = document.getElementById('nsDetailToggle');
+    if(nsdt) nsdt.addEventListener('click', function(){ state.showNsDetail = !state.showNsDetail; renderSummary(); });
     var npt = document.getElementById('noPriorityToggle');
     if(npt) npt.addEventListener('click', function(){ state.noPriorityOpen = !state.noPriorityOpen; renderSummary(); });
     var spt = document.getElementById('suspendedToggle');
