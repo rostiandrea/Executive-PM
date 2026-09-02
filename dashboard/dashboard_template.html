@@ -642,7 +642,7 @@
     var btn = document.getElementById('exportExcelBtn');
     var f = filteredSummaryItems();
     var rows = f.withPriority.concat(f.noPriority).concat(f.suspended);
-    var headers = ['Key','Tipo','Main Product','Priority','Status','Project Phase','Release Date',
+    var headers = ['Key','Summary','Tipo','Main Product','Priority','Status','Project Phase','Release Date',
       'Iniziativa','Progetto','Project Manager','Demand ref.','SME Factory','Operation ref.','Requestor',
       'Ultimo stato','Next steps','Costi e Benefici'];
     var lines = [headers.map(csvCell).join(';')];
@@ -654,7 +654,7 @@
       var cb = it.costiBenefici;
       var cbText = cb ? ('Benefici: '+(cb.beneficiAnnui||'—')+' | Capex: '+(cb.capex||'—')+' | Opex est.: '+(cb.opexEsterni||'—')+' | Opex int.: '+(cb.opexInterni||'—')+' | GG interni: '+(cb.ggInterni||'—')) : '';
       lines.push([
-        it.key, it.type, it.mainProduct||'', it.priority===null?'':it.priority, it.status||'',
+        it.key, it.summary||'', it.type, it.mainProduct||'', it.priority===null?'':it.priority, it.status||'',
         it.projectPhase||'', it.releaseDate?fmtDate(it.releaseDate):'',
         it.iniziativa||'', it.progetto||'', it.pm||'', it.demand||'', it.sme||'', it.ops||'', it.requestor||'',
         it.ultimoStato||'', nsText, cbText
