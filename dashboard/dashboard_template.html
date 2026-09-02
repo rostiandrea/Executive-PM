@@ -613,7 +613,7 @@
     return list;
   }
 
-  function renderSummary(){
+  function filteredSummaryItems(){
     var items = allItems();
     var productScoped = items.filter(function(it){
       var isLtl = it.mainProduct === 'LTL / B2C', isCl = it.mainProduct === 'Contract Logistics';
@@ -628,6 +628,59 @@
     var active = scoped.filter(function(it){ return !isSuspended(it); });
     var withPriority = sortItems(active.filter(function(it){ return it.priority !== null; }));
     var noPriority = sortItems(active.filter(function(it){ return it.priority === null; }));
+    return { productScoped: productScoped, oldDoneHidden: oldDoneHidden, scoped: scoped, suspended: suspended, withPriority: withPriority, noPriority: noPriority };
+  }
+
+  function csvCell(v){
+    if(v === null || v === undefined) return '';
+    var s = String(v);
+    if(/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+    return s;
+  }
+
+  async function exportExcel(){
+    var btn = document.getElementById('exportExcelBtn');
+    var f = filteredSummaryItems();
+    var rows = f.withPriority.concat(f.noPriority).concat(f.suspended);
+    var headers = ['Key','Tipo','Main Product','Priority','Status','Project Phase','Release Date',
+      'Iniziativa','Progetto','Project Manager','Demand ref.','SME Factory','Operation ref.','Requestor',
+      'Ultimo stato','Next steps','Costi e Benefici'];
+    var lines = [headers.map(csvCell).join(',')];
+    rows.forEach(function(it){
+      var nsText = (it.nextSteps||[]).map(function(ns){
+        var due = ns.dueISO ? fmtDate(ns.dueISO) : (ns.dueRaw || 'tbd');
+        return (ns.done?'[fatto] ':'') + ns.text + ' (' + (ns.owner||'—') + ' - ' + due + ')';
+      }).join(' | ');
+      var cb = it.costiBenefici;
+      var cbText = cb ? ('Benefici: '+(cb.beneficiAnnui||'—')+' | Capex: '+(cb.capex||'—')+' | Opex est.: '+(cb.opexEsterni||'—')+' | Opex int.: '+(cb.opexInterni||'—')+' | GG interni: '+(cb.ggInterni||'—')) : '';
+      lines.push([
+        it.key, it.type, it.mainProduct||'', it.priority===null?'':it.priority, it.status||'',
+        it.projectPhase||'', it.releaseDate?fmtDate(it.releaseDate):'',
+        it.iniziativa||'', it.progetto||'', it.pm||'', it.demand||'', it.sme||'', it.ops||'', it.requestor||'',
+        it.ultimoStato||'', nsText, cbText
+      ].map(csvCell).join(','));
+    });
+    var csv = '﻿' + lines.join('\r\n');
+    var filename = 'product-team-management-' + todayISO() + '.csv';
+    try{
+      var downloads = await claude.use('downloads');
+      if(!downloads){ showToast('Export non disponibile in questa vista.'); return; }
+      if(btn) btn.disabled = true;
+      await downloads.save({ filename: filename, data: csv });
+      showToast('Export scaricato (' + rows.length + ' righe).');
+    }catch(err){
+      var code = err && err.code;
+      if(code !== 'declined'){
+        showToast('Export non riuscito' + (code ? ' (' + code + ')' : '') + '.');
+      }
+    }finally{
+      if(btn) btn.disabled = false;
+    }
+  }
+
+  function renderSummary(){
+    var f = filteredSummaryItems();
+    var oldDoneHidden = f.oldDoneHidden, suspended = f.suspended, withPriority = f.withPriority, noPriority = f.noPriority;
 
     var html = '';
     html += '<div class="toolbar">';
@@ -660,6 +713,10 @@
       + '</button>'
       + '<button class="chip-filter standalone" id="nsDetailToggle" aria-pressed="'+state.showNsDetail+'">'
       +   (state.showNsDetail ? 'Nascondi dettaglio Next Steps' : 'Mostra dettaglio Next Steps')
+      + '</button>'
+      + '<button class="btn btn-sm" id="exportExcelBtn" style="margin-left:auto;">'
+      +   '<svg class="icon-sm" viewBox="0 0 20 20" fill="none"><path d="M10 3v9m0 0 3-3m-3 3-3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13.5V16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      +   'Esporta Excel'
       + '</button>'
       + '</div>';
     html += '</div>';
@@ -773,6 +830,8 @@
     if(odt) odt.addEventListener('click', function(){ state.showOldDone = !state.showOldDone; renderSummary(); });
     var nsdt = document.getElementById('nsDetailToggle');
     if(nsdt) nsdt.addEventListener('click', function(){ state.showNsDetail = !state.showNsDetail; renderSummary(); });
+    var xlb = document.getElementById('exportExcelBtn');
+    if(xlb) xlb.addEventListener('click', exportExcel);
     var npt = document.getElementById('noPriorityToggle');
     if(npt) npt.addEventListener('click', function(){ state.noPriorityOpen = !state.noPriorityOpen; renderSummary(); });
     var spt = document.getElementById('suspendedToggle');

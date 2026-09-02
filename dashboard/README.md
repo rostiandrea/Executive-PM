@@ -12,7 +12,10 @@ passo è esplicito.
   si crea un artifact nuovo invece di aggiornare quello esistente).
 - **Title**: `Product Team Management`
 - **Favicon**: `🚦`
-- **Capabilities**: `{"artifact": {}}`
+- **Capabilities**: `{"artifact": {}, "downloads": true}` (il secondo abilita il
+  bottone "Esporta Excel" nella vista sommario, che scarica un CSV con BOM
+  UTF-8 — Excel lo apre nativamente; `.xlsx` non è un'estensione supportata
+  dalla capability `downloads`).
 - File sorgenti nel repo: `dashboard/dashboard_template.html`,
   `dashboard/build_dashboard_data.py`, `dashboard/publish_dashboard.py`,
   `dashboard/grandparents.jsonl` (cache della catena Iniziativa/Progetto).
@@ -156,7 +159,7 @@ Artifact
   title="Product Team Management"
   description="Dashboard operativa sulle CR/Wave Jira (Arcese LTL/B2C & Contract Logistics): sommario, scadenze/next steps stile board e Gantt — editabile e persistente."
   favicon="🚦"
-  capabilities={"artifact": {}}
+  capabilities={"artifact": {}, "downloads": true}
 ```
 
 Se il publish viene rifiutato per "newer version" (qualcuno ha pubblicato
