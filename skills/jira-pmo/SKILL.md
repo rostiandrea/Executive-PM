@@ -48,6 +48,13 @@ attivo — questa skill copre solo la parte "dati Jira".
   Leggi questo prima di produrre qualunque estrazione o monitoraggio
   Jira così l'output rispetta esattamente il formato atteso.
 
+- **`references/sal-minute-template.md`** — Il formato esatto (oggetto,
+  struttura, stile) della minuta di SAL interno di Prodotto quando viene
+  richiesta **in formato mail** — diverso dalla lista di monitoraggio a
+  tabella. Leggi questo quando l'utente chiede un recap/minuta di SAL da
+  inviare via mail, e usalo anche per collegare la minuta alla proposta
+  di aggiornamento dei commenti `**Stato aggiornato**` su Jira.
+
 ## Core workflow
 
 1. **Interpreta la gerarchia e applica il filtro.** Usa
