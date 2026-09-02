@@ -116,7 +116,7 @@
   .sync{ display:flex; align-items:center; gap:10px; }
   .sync-time{ font-size:11px; color:var(--ink-faint); }
 
-  main{ padding:20px; max-width:1320px; margin:0 auto; }
+  main{ padding:20px; max-width:1680px; margin:0 auto; }
   .view{ display:none; }
   .view.active{ display:block; }
 
@@ -159,7 +159,7 @@
     overflow:hidden; background:var(--surface);
   }
   .row{
-    display:grid; grid-template-columns:20px 30px 82px 1fr 112px 92px 96px 54px 1.2fr 18px;
+    display:grid; grid-template-columns:20px 30px 82px 46px 1fr 112px 92px 96px 54px 1.2fr 18px;
     align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--border);
     padding:10px 13px; cursor:pointer; transition:background .1s ease;
   }
@@ -167,9 +167,13 @@
   .list .row:nth-child(even){ background:var(--surface-2); }
   .row:hover{ background:var(--accent-soft) !important; }
   .row-head{
-    display:grid; grid-template-columns:20px 30px 82px 1fr 112px 92px 96px 54px 1.2fr 18px; gap:12px;
+    display:grid; grid-template-columns:20px 30px 82px 46px 1fr 112px 92px 96px 54px 1.2fr 18px; gap:12px;
     padding:0 13px 7px; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); font-weight:600;
   }
+  .prod-badge{ font-size:9.5px; font-weight:700; padding:2px 5px; border-radius:5px; text-align:center; white-space:nowrap; letter-spacing:.01em; }
+  .prod-badge.ltl{ background:var(--blue-soft); color:var(--blue-fg); }
+  .prod-badge.cl{ background:var(--green-soft); color:var(--green-fg); }
+  .prod-badge.other{ background:var(--grey-soft); color:var(--grey-fg); }
   .flag{ width:17px; height:17px; display:flex; align-items:center; justify-content:center; cursor:help; }
   .flag svg{ width:17px; height:17px; }
   .pbadge{
@@ -348,8 +352,8 @@
 
   @media (max-width: 900px){
     .row, .row-head{ grid-template-columns:20px 30px 1fr 96px; }
-    .row-head span:nth-child(5), .row-head span:nth-child(6), .row-head span:nth-child(7), .row-head span:nth-child(8), .row-head span:nth-child(9),
-    .row .phase-cell, .row .date-cell, .row .ns-counter, .row .stato-cell{ display:none; }
+    .row-head span:nth-child(4), .row-head span:nth-child(6), .row-head span:nth-child(7), .row-head span:nth-child(8), .row-head span:nth-child(9), .row-head span:nth-child(10),
+    .row .prod-cell, .row .phase-cell, .row .date-cell, .row .ns-counter, .row .stato-cell{ display:none; }
     .kpis{ grid-template-columns:repeat(2,1fr); }
   }
 </style>
@@ -391,7 +395,7 @@
     openKey: null
   };
   var OLD_DONE_DAYS = 30;
-  var ROW_COLS_BASE = '20px 30px 82px 1fr 112px 92px 96px 54px 1.2fr 18px';
+  var ROW_COLS_BASE = '20px 30px 82px 46px 1fr 112px 92px 96px 54px 1.2fr 18px';
   var NS_DETAIL_COL_W = '260px';
   function useNsDetail(){ return state.showNsDetail && window.innerWidth > 900; }
 
@@ -660,7 +664,7 @@
       + '</div>';
     html += '</div>';
 
-    html += '<div class="row-head"'+(useNsDetail()?' style="grid-template-columns:'+ROW_COLS_BASE+' '+NS_DETAIL_COL_W+';"':'')+'><span></span><span>Prio</span><span>Key</span><span>Summary</span><span>Stato</span><span>Fase</span><span>Rilascio</span><span>NS</span><span>Ultimo stato</span><span></span>'+(useNsDetail()?'<span>Next Steps</span>':'')+'</div>';
+    html += '<div class="row-head"'+(useNsDetail()?' style="grid-template-columns:'+ROW_COLS_BASE+' '+NS_DETAIL_COL_W+';"':'')+'><span></span><span>Prio</span><span>Key</span><span>Prod</span><span>Summary</span><span>Stato</span><span>Fase</span><span>Rilascio</span><span>NS</span><span>Ultimo stato</span><span></span>'+(useNsDetail()?'<span>Next Steps</span>':'')+'</div>';
 
     if(!withPriority.length && !noPriority.length && !suspended.length){
       html += '<div class="empty-state">Nessun elemento corrisponde ai filtri.</div>';
@@ -718,6 +722,7 @@
       + '<div>'+iconFlag(f, reasons)+'</div>'
       + '<div class="pbadge">'+(it.priority===null?'—':esc(it.priority))+'</div>'
       + '<div><span class="key-link '+(it.type==='WAV'?'type-wav':'type-cr')+' mono">'+esc(it.key)+'</span></div>'
+      + '<div class="prod-cell">'+prodBadge(it.mainProduct)+'</div>'
       + '<div class="summary-cell"><div class="s">'+esc(it.summary)+'</div><div class="m" title="'+esc((it.iniziativa?it.iniziativa+' ':'')+(it.progetto||''))+'">'+esc(it.iniziativa||it.progetto||'Not available')+'</div></div>'
       + '<div>'+statusPill(it)+'</div>'
       + '<div class="phase-cell">'+esc(it.projectPhase||'—')+'</div>'
@@ -727,6 +732,13 @@
       + '<div class="chev">›</div>'
       + (nsd ? renderNsDetailCell(it) : '')
       + '</div>';
+  }
+
+  function prodBadge(mainProduct){
+    if(mainProduct === 'LTL / B2C') return '<span class="prod-badge ltl">LTL</span>';
+    if(mainProduct === 'Contract Logistics') return '<span class="prod-badge cl">CL</span>';
+    if(!mainProduct) return '';
+    return '<span class="prod-badge other" title="'+esc(mainProduct)+'">'+esc(mainProduct.slice(0,3).toUpperCase())+'</span>';
   }
 
   function renderNsDetailCell(it){
