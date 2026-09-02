@@ -634,7 +634,7 @@
   function csvCell(v){
     if(v === null || v === undefined) return '';
     var s = String(v);
-    if(/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+    if(/[";\n\r]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
     return s;
   }
 
@@ -645,7 +645,7 @@
     var headers = ['Key','Tipo','Main Product','Priority','Status','Project Phase','Release Date',
       'Iniziativa','Progetto','Project Manager','Demand ref.','SME Factory','Operation ref.','Requestor',
       'Ultimo stato','Next steps','Costi e Benefici'];
-    var lines = [headers.map(csvCell).join(',')];
+    var lines = [headers.map(csvCell).join(';')];
     rows.forEach(function(it){
       var nsText = (it.nextSteps||[]).map(function(ns){
         var due = ns.dueISO ? fmtDate(ns.dueISO) : (ns.dueRaw || 'tbd');
@@ -658,7 +658,7 @@
         it.projectPhase||'', it.releaseDate?fmtDate(it.releaseDate):'',
         it.iniziativa||'', it.progetto||'', it.pm||'', it.demand||'', it.sme||'', it.ops||'', it.requestor||'',
         it.ultimoStato||'', nsText, cbText
-      ].map(csvCell).join(','));
+      ].map(csvCell).join(';'));
     });
     var csv = '﻿' + lines.join('\r\n');
     var filename = 'product-team-management-' + todayISO() + '.csv';
